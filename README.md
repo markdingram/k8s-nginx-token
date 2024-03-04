@@ -55,3 +55,20 @@ HTTP/1.1 403 Forbidden
 ````
 
 
+## Confirm Redis connections are being pooled
+
+````
+$ while true; do curl -s -I -X GET -H "Authorization: Bearer aaaa.bbbb.my_sig" "http://kind.internal" | head -n 1; done
+HTTP/1.1 403 Forbidden
+HTTP/1.1 403 Forbidden
+HTTP/1.1 403 Forbidden
+... ^c
+
+Check the "reused" values printed in ingress logs:
+
+$ kubectl logs -n ingress deploy/ingress-nginx-controller | grep reused
+2024/03/04 12:00:36 [notice] 35#35: *3752 [lua] main.lua:29: signature: my_sig, exists: 1, reused: 2, client: 192.168.65.1, server: kind.internal, request: "GET / HTTP/1.1", host: "kind.internal"
+2024/03/04 12:00:36 [notice] 40#40: *3753 [lua] main.lua:29: signature: my_sig, exists: 1, reused: 6, client: 192.168.65.1, server: kind.internal, request: "GET / HTTP/1.1", host: "kind.internal"
+2024/03/04 12:00:36 [notice] 43#43: *3754 [lua] main.lua:29: signature: my_sig, exists: 1, reused: 4, client: 192.168.65.1, server: kind.internal, request: "GET / HTTP/1.1", host: "kind.internal"
+````
+
