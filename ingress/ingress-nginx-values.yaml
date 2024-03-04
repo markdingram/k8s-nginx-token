@@ -1,0 +1,25 @@
+nameOverride: ingress-nginx
+
+controller:
+  image:
+    repository: null
+    image: ingress-nginx/controller
+    digest: null
+    tag: v1.9.6-lua
+  extraArgs:
+    v: "2"
+  hostPort:
+    enabled: true
+  service:
+    type: "NodePort"
+  nodeSelector:
+    ingress-ready: "true"
+  tolerations:
+  - key: "node-role.kubernetes.io/master"
+    operator: "Equal"
+    effect: "NoSchedule"
+  config:
+    # comma separated list
+    plugins: "auth_redis,auth_simple"
+tcp:
+  6379: "ingress/redis:6379"

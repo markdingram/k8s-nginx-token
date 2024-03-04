@@ -1,0 +1,61 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kuard-deployment
+  labels:
+    app: kuard
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: kuard
+  template:
+    metadata:
+      labels:
+        app: kuard
+    spec:
+      containers:
+      - image: gcr.io/kuar-demo/kuard-amd64:3
+        name: kuard
+        ports:
+        - containerPort: 8080
+          name: http
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kuard
+spec:
+  selector:
+    app: kuard
+  ports:
+  - port: 80
+    targetPort: 8080
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: kuard
+  # annotations:
+  #   nginx.ingress.kubernetes.io/configuration-snippet: |
+  #     modsecurity_rules '
+  #       SecRuleEngine On
+  #       SecAuditLog /var/log/modsec_audit.log
+  #       SecAuditLogParts ABCIJDEFHZ
+  #       SecAuditEngine RelevantOnly
+  #       SecRuleRemoveById 932140
+  #     ';
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: kind.internal
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: kuard
+            port: 
+              number: 80
