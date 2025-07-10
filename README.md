@@ -1,3 +1,5 @@
+WARNING: Ingress NGINX removed Lua Plugins in https://github.com/kubernetes/ingress-nginx/releases/tag/controller-v1.12.0
+
 # Ingress NGINX Controller - LUA example
 
 Running Lua Plugins inside Kubernetes "ingress-nginx"
